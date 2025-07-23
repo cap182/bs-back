@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  book_id        String   @id
+  title          String
+  price          Float    @db.DoublePrecision
+  rating         Int      // 0-5
+  img            String
+  stock          Boolean
+  stock_quantity Int?
+  category       Category @relation(fields: [categoryId], references: [category_id])
+  categoryId     String   @map("category_id") // FK
+
+  @@map("books")
+}
+
+model Category {
+  category_id   String   @id
+  category_name String   @unique
+  category_url  String   @unique
+  updated_on    DateTime?
+  books         Book[]
+
+  @@map("categories")
+}
+
+model Scraping {
+  scraping_id     Int       @id @default(autoincrement())
+  categoryId      String?   @map("category_id") // FK
+  page            Int?
+  number_of_books Int
+
+  @@map("scrapings")
+}
