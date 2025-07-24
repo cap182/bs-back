@@ -1,6 +1,7 @@
-import { IsOptional, IsNumber, IsString, Min } from 'class-validator';
+import { IsOptional, IsNumber, IsString, Min, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export type PriceFilterType = 'greater_than' | 'less_than' | 'equal';
 export class GetBooksDto {
   @IsOptional()
   @IsNumber()
@@ -21,4 +22,15 @@ export class GetBooksDto {
   @IsOptional()
   @IsString()
   title?: string; // Filtro opcional por título (para búsqueda parcial)
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @Min(0) // El precio no debería ser negativo
+  price?: number; // El valor del precio para comparar
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['greater_than', 'less_than', 'equal'])
+  price_filter_type?: PriceFilterType;
 }

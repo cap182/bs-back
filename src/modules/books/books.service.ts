@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { BooksRepository } from './books.repository';
 import { Book, Prisma } from '@prisma/client';
 import { CreateBookDto } from './dtos/create-book.dto';
@@ -19,8 +23,8 @@ export class BooksService {
     return this.booksRepository.create(createBookDto);
   }
   async findAll(query: GetBooksDto): Promise<{ data: Book[]; total: number }> {
-    const page = query.page || 1;
-    const limit = query.limit || 30;
+    const page = parseInt(query.page?.toString() || '1', 10);
+    const limit = parseInt(query.limit?.toString() || '30', 10);
     const skip = (page - 1) * limit;
 
     // Construir el objeto de filtros para Prisma
@@ -37,6 +41,36 @@ export class BooksService {
       };
     }
 
+    if (query.price !== undefined && query.price_filter_type) {
+      const priceValue = parseFloat(query.price.toString()) || 0;
+      if (isNaN(priceValue)) {
+        throw new BadRequestException('Invalid price value provided.');
+      }
+
+      switch (query.price_filter_type) {
+        case 'greater_than':
+          filters.price = { gte: priceValue };
+          break;
+        case 'less_than':
+          filters.price = { lte: priceValue };
+          break;
+        case 'equal':
+          filters.price = priceValue;
+          break;
+        default:
+          throw new BadRequestException(
+            `Invalid price_filter_type: ${query.price_filter_type}`,
+          );
+      }
+    } else if (query.price !== undefined && !query.price_filter_type) {
+      throw new BadRequestException(
+        'price_filter_type is required when price is provided.',
+      );
+    } else if (query.price_filter_type && query.price === undefined) {
+      throw new BadRequestException(
+        'price is required when price_filter_type is provided.',
+      );
+    }
     // Obtener el total de libros que coinciden con los filtros (sin paginación)
     const total = await this.booksRepository.count(filters);
 

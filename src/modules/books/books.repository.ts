@@ -7,7 +7,7 @@ import { CreateBookDto } from './dtos/create-book.dto';
 export class BooksRepository {
   constructor(private prisma: PrismaService) {}
 
-async create(createBookDto: CreateBookDto): Promise<Book> {
+  async create(createBookDto: CreateBookDto): Promise<Book> {
     const { categoryId, ...bookData } = createBookDto;
 
     return this.prisma.book.create({
@@ -23,14 +23,21 @@ async create(createBookDto: CreateBookDto): Promise<Book> {
   async findAll(
     skip: number,
     take: number,
-    where: Prisma.BookWhereInput, // <-- Nuevo parámetro para filtros
+    where: Prisma.BookWhereInput,
   ): Promise<Book[]> {
     return this.prisma.book.findMany({
       skip: skip,
       take: take,
-      where: where, // Aplica los filtros
+      where: where,
       orderBy: {
-        title: 'asc', // O el campo que prefieras para ordenar
+        title: 'asc',
+      },
+      include: {
+        category: {
+          select: {
+            category_name: true,
+          },
+        },
       },
     });
   }
@@ -45,7 +52,11 @@ async create(createBookDto: CreateBookDto): Promise<Book> {
     return this.prisma.book.findUnique({
       where: { book_id: id },
       include: {
-        category: true,
+        category: {
+          select: {
+            category_name: true,
+          },
+        },
       },
     });
   }
