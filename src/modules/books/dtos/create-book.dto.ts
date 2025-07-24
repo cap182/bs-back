@@ -42,7 +42,7 @@ export class CreateBookDto {
   @Min(0)
   @IsOptional()
   @Type(() => Number)
-  stock_quantity?: number;
+  stock_quantity?: number | null;
 
   @IsString()
   @IsNotEmpty()

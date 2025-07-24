@@ -20,11 +20,24 @@ async create(createBookDto: CreateBookDto): Promise<Book> {
     });
   }
 
-  async findAll(): Promise<Book[]> {
+  async findAll(
+    skip: number,
+    take: number,
+    where: Prisma.BookWhereInput, // <-- Nuevo parámetro para filtros
+  ): Promise<Book[]> {
     return this.prisma.book.findMany({
-      include: {
-        category: true,
+      skip: skip,
+      take: take,
+      where: where, // Aplica los filtros
+      orderBy: {
+        title: 'asc', // O el campo que prefieras para ordenar
       },
+    });
+  }
+
+  async count(where: Prisma.BookWhereInput): Promise<number> {
+    return this.prisma.book.count({
+      where: where,
     });
   }
 

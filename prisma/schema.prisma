@@ -33,15 +33,18 @@ model Category {
   category_url  String   @unique
   updated_on    DateTime?
   books         Book[]
+  scrapingLogs  Scraping[] @relation("CategoryScrapingLogs")
 
   @@map("categories")
 }
 
 model Scraping {
   scraping_id     Int       @id @default(autoincrement())
-  categoryId      String?   @map("category_id") // FK
   page            Int?
   number_of_books Int
-
+  scraped_at      DateTime  @default(now())
+  category_id     String?   @map("category_id")
+  category        Category? @relation("CategoryScrapingLogs", fields: [category_id], references: [category_id])
   @@map("scrapings")
 }
+

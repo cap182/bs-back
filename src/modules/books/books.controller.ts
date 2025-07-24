@@ -13,6 +13,8 @@ import {
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dtos/create-book.dto';
 import { UpdateBookDto } from './dtos/update-book.dto';
+import { GetBooksDto } from './dtos/get-books.dto';
+import { Book } from '@prisma/client';
 
 @Controller('books')
 export class BooksController {
@@ -28,11 +30,16 @@ export class BooksController {
   // GET /books: Listado completo de libros
   // GET /books?category=category_name: Filtrado por categoría
   @Get()
-  findAll(@Query('category') categoryName?: string) {
-    if (categoryName) {
-      return this.booksService.findByCategory(categoryName);
-    }
-    return this.booksService.findAll();
+  async findAll(
+    @Query() query: GetBooksDto,
+  ): Promise<{ data: Book[]; total: number; page: number; limit: number }> {
+    const { data, total } = await this.booksService.findAll(query);
+    return {
+      data,
+      total,
+      page: query.page || 1,
+      limit: query.limit || 30,
+    };
   }
 
   // GET /books/:id: Detalle de un libro específico
@@ -49,7 +56,7 @@ export class BooksController {
 
   // DELETE /books/:id: Eliminar libro
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT) // 204 No Content para eliminación exitosa
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.booksService.remove(id);
   }
