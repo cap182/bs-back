@@ -23,7 +23,7 @@ npm install
 ```
 
 Configura las variables de entorno:
-Crea un archivo .env en la raíz del proyecto y añade la siguiente variable. 
+Crea un archivo .env en la raíz del proyecto y añade la siguiente variable. (ajustala para configurar tu conexión)
 DATABASE_URL="postgresql://postgres:admin@localhost:5433/books?schema=public"
 
 El proyecto usa prisma por lo cual solo se necesita ejecutar las migraciones, en caso de error prueba crear la base de datos "books" manualmente y luego ejecuta las migraciones.
