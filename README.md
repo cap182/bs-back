@@ -27,6 +27,9 @@ Crea un archivo .env en la raíz del proyecto y añade la siguiente variable.
 DATABASE_URL="postgresql://postgres:admin@localhost:5433/books?schema=public"
 
 El proyecto usa prisma por lo cual solo se necesita ejecutar las migraciones, en caso de error prueba crear la base de datos "books" manualmente y luego ejecuta las migraciones.
+```bash
+npx prisma migrate dev
+```
 
 Para correr el proyecto:
 
@@ -34,7 +37,7 @@ Para correr el proyecto:
 npm run start:dev
 ```
 
-Finalmente ejecuta este curl para obtener hacer scraping y obtener las categorias desde la página.
+Finalmente ejecuta este curl para hacer scraping y obtener las categorias desde la página.
 
 ```bash
 curl -X POST http://localhost:3000/scraping/categories
