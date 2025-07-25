@@ -13,10 +13,6 @@ Descargar Node.js
 
 npm (Node Package Manager): Viene incluido con Node.js.
 
-Docker y Docker Compose (opcional pero recomendado para la base de datos): Para ejecutar una instancia de PostgreSQL fácilmente.
-
-Descargar Docker Desktop
-
 ⚙️ Instalación
 Clona este repositorio:
 
