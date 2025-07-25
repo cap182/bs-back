@@ -18,7 +18,9 @@ Clona este repositorio:
 
 Instala las dependencias de Node.js:
 
+```bash
 npm install
+```
 
 Configura las variables de entorno:
 Crea un archivo .env en la raíz del proyecto y añade la siguiente variable. 
@@ -26,4 +28,14 @@ DATABASE_URL="postgresql://postgres:admin@localhost:5433/books?schema=public"
 
 El proyecto usa prisma por lo cual solo se necesita ejecutar las migraciones, en caso de error prueba crear la base de datos "books" manualmente y luego ejecuta las migraciones.
 
-finalmente npm run start:dev
+Para correr el proyecto:
+
+```bash
+npm run start:dev
+```
+
+Finalmente ejecuta este curl para obtener hacer scraping y obtener las categorias desde la página.
+
+```bash
+curl -X POST http://localhost:3000/scraping/categories
+```
