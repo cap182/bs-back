@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException, HttpStatus, HttpException } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { PrismaService } from '../../prisma/prisma.service'; // Para el ScrapingLog
@@ -7,6 +7,7 @@ import { BooksService } from '../books/books.service'; // Para guardar libros
 import { CreateBookDto } from '../books/dtos/create-book.dto'; // DTO para crear libros
 import { Category, Book, Scraping } from '@prisma/client'; // Importar tipos de Prisma
 import { ScrapeBooksDto } from './dtos/scrape-books.dto';
+import { ScrapingRepository } from './scraping.repository';
 
 @Injectable()
 export class ScrapingService {
@@ -24,15 +25,15 @@ export class ScrapingService {
   };
 
   constructor(
-    private readonly prisma: PrismaService, // Inyecta PrismaService
+    private readonly prisma: PrismaService,
     private readonly categoriesService: CategoriesService,
     private readonly booksService: BooksService,
+    private readonly scrapingRepository: ScrapingRepository
   ) {}
 
-  // --- Métodos de Scraping de Categorías (Ya existentes, pero se muestra completo) ---
   async scrapeCategories(): Promise<Category[]> {
     this.logger.log(`Starting category scraping from: ${this.BASE_URL}${this.GENERIC_CATALOG_PATH}category/books_1/index.html`);
-    const scrapedCategories: CreateBookDto[] = []; // Usamos CreateBookDto temporalmente, deberíamos usar un DTO específico para categorías
+    const scrapedCategories: CreateBookDto[] = [];
 
     try {
       const response = await axios.get(`${this.BASE_URL}${this.GENERIC_CATALOG_PATH}category/books_1/index.html`);
@@ -105,6 +106,12 @@ export class ScrapingService {
       this.logger.error(`Error during category scraping: ${error.message}`);
       throw error;
     }
+  }
+
+  async getScrapingLogs(): Promise<Scraping[]> {
+    this.logger.log('Fetching all scraping logs.');
+    const logs = await this.scrapingRepository.findAll();
+    return logs;
   }
 
 
@@ -252,8 +259,15 @@ export class ScrapingService {
       }
       return booksAdded;
     } catch (error) {
-      this.logger.error(`Error scraping page ${pageNumber}: ${error.message}`);
-      throw error;
+      if (axios.isAxiosError(error) && error.response && error.response.status === HttpStatus.NOT_FOUND) {
+        this.logger.warn(`Page ${pageNumber} not found (404). Assuming it's beyond the last existing page.`);
+        
+        return 0;
+        
+      } else {
+        this.logger.error(`Error scraping page ${pageNumber}: ${error.message}`);
+        throw error;
+      }
     }
   }
 

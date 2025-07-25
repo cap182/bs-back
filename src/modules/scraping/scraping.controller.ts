@@ -1,4 +1,4 @@
-import { Controller, Post, HttpCode, HttpStatus, Logger, Body } from '@nestjs/common';
+import { Controller, Post, HttpCode, HttpStatus, Logger, Body, Get } from '@nestjs/common';
 import { ScrapingService } from './scraping.service';
 import { Category } from '@prisma/client';
 import { ScrapeBooksDto } from './dtos/scrape-books.dto'; // Importa el nuevo DTO
@@ -38,5 +38,12 @@ export class ScrapingController {
       this.logger.error(`Error processing book scraping request: ${error.message}`);
       throw error;
     }
+  }
+
+  @Get('logs')
+  @HttpCode(HttpStatus.OK)
+  async getScrapingLogs() {
+    this.logger.log('Received request to get all scraping logs.');
+    return this.scrapingService.getScrapingLogs();
   }
 }

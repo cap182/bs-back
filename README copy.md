@@ -1,0 +1,33 @@
+BookScraping Backend
+Este es el backend de la aplicación BookScraping, construida con NestJS y Prisma. Se encarga de la lógica de scraping de libros de un sitio web de ejemplo, la gestión de categorías y libros en la base de datos, y la exposición de una API RESTful para interactuar con estos datos.
+
+🚀 Empezando
+Sigue estos pasos para tener una copia operativa de tu proyecto en tu máquina local para desarrollo y pruebas.
+
+📋 Prerrequisitos
+Antes de empezar, asegúrate de tener instalado lo siguiente:
+
+Node.js: Se recomienda la versión LTS (v18.x o superior).
+
+Descargar Node.js
+
+npm (Node Package Manager): Viene incluido con Node.js.
+
+Docker y Docker Compose (opcional pero recomendado para la base de datos): Para ejecutar una instancia de PostgreSQL fácilmente.
+
+Descargar Docker Desktop
+
+⚙️ Instalación
+Clona este repositorio:
+
+Instala las dependencias de Node.js:
+
+npm install
+
+Configura las variables de entorno:
+Crea un archivo .env en la raíz del proyecto y añade la siguiente variable. 
+DATABASE_URL="postgresql://postgres:admin@localhost:5433/books?schema=public"
+
+El proyecto usa prisma por lo cual solo se necesita ejecutar las migraciones, en caso de error prueba crear la base de datos "books" manualmente y luego ejecuta las migraciones.
+
+finalmente npm run start:dev
